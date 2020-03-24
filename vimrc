@@ -20,8 +20,9 @@ Plugin 'tpope/vim-endwise'
 
 "" Navigation and search plugins
 " Type <Leader>\* to search for word under cursor
-Plugin 'scrooloose/nerdtree'
 Plugin 'bronson/vim-visual-star-search'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'scrooloose/nerdtree'
 
 "" Syntax plugins
 Plugin 'scrooloose/nerdcommenter.git'
@@ -34,7 +35,7 @@ Plugin 'gregsexton/gitv'
 
 " Go plugins
 Plugin 'fatih/vim-go'
-Plugin 'benmills/vim-golang-alternate'
+Plugin 'SirVer/ultisnips'
 
 call vundle#end()
 
@@ -47,8 +48,7 @@ set wildmenu
 set ttimeout
 set ttimeoutlen=100
 filetype plugin indent on
-set directory=$HOME/.vim/swapfiles//
-
+set noswapfile
 set shell=bash\ -l
 
 "" Whitespace
@@ -94,11 +94,24 @@ let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go', 'env'
 "" taboo.vim
 let g:taboo_tabline = 0
 
+"" ultisnips
+" Update the go snippets via :UltiSnipsAddFiletypes go, :UltiSnipsEdit and
+" copy snippets from https://github.com/fatih/vim-go/blob/master/gosnippets/UltiSnips/go.snippets
+
+let g:UltiSnipsExpandTrigger='<tab>'
+
 "" vim-airline
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#show_buffers = 0
 let g:airline_theme="luna"
+
+"" vim-go
+let g:go_list_type = "quickfix"
+let g:go_fmt_command = "goimports"
+let g:go_metalinter_autosave = 1
+let g:go_auto_sameids = 0
+let g:go_auto_type_info = 1
 
 "" *** KEYMAPS ***
 
@@ -111,9 +124,10 @@ noremap <Left>  <NOP>
 noremap <Right> <NOP>
 noremap <Up>    <NOP>
 noremap <Down>  <NOP>
-" Move to and fro in quickfix list
+" Navigate quickfix list
 noremap <Leader>; :cp<CR>
 noremap <Leader>' :cn<CR>
+noremap <Leader>: :cclose<CR>
 " Switch between windows
 noremap <Leader>w <C-w>w
 " Hide search highlights
@@ -180,13 +194,28 @@ nnoremap <Leader>gl :Glog<CR>
 nnoremap <Leader>dw :FixWhitespace<CR>
 
 "" vim-go
-" (TODO)
-au FileType go nmap <leader>t <Plug>(go-test)
-au FileType go nmap <Leader>gdv <Plug>(go-def-vertical)
 
-"" vim-golang-alternate
-au Filetype go nnoremap <Leader>a :A<CR>
-au Filetype go nnoremap <Leader>av :AV<CR>
+" run :GoBuild or :GoTestCompile based on the go file
+function! s:build_go_files()
+  let l:file = expand('%')
+  if l:file =~# '^\f\+_test\.go$'
+    call go#test#Test(0, 1)
+  elseif l:file =~# '^\f\+\.go$'
+    call go#cmd#Build(0)
+  endif
+endfunction
+
+au Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
+au Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
+au Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
+au Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
+
+au FileType go nmap <Leader>b :<C-u>call <SID>build_go_files()<CR>
+au FileType go nmap <Leader>r <Plug>(go-run)
+au FileType go nmap <Leader>t <Plug>(go-test)
+au FileType go nmap <Leader>c <Plug>(go-coverage-toggle)
+au Filetype go nmap <Leader>a :AV<CR>
+au FileType go nmap <Leader>d <Plug>(go-decls)
 
 "" gitv
 " (TODO) Browse git version history
