@@ -35,7 +35,6 @@ Plugin 'gregsexton/gitv'
 
 " Go plugins
 Plugin 'fatih/vim-go'
-Plugin 'SirVer/ultisnips'
 
 call vundle#end()
 
@@ -94,12 +93,6 @@ let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go', 'env'
 "" taboo.vim
 let g:taboo_tabline = 0
 
-"" ultisnips
-" Update the go snippets via :UltiSnipsAddFiletypes go, :UltiSnipsEdit and
-" copy snippets from https://github.com/fatih/vim-go/blob/master/gosnippets/UltiSnips/go.snippets
-
-let g:UltiSnipsExpandTrigger='<tab>'
-
 "" vim-airline
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
@@ -109,9 +102,12 @@ let g:airline_theme="luna"
 "" vim-go
 let g:go_list_type = "quickfix"
 let g:go_fmt_command = "goimports"
-let g:go_metalinter_autosave = 1
+" linter isn't always reliable
+let g:go_metalinter_autosave = 0
 let g:go_auto_sameids = 0
 let g:go_auto_type_info = 1
+" gopls works for module renaming
+let g:go_rename_command = "gopls"
 
 "" *** KEYMAPS ***
 
@@ -125,18 +121,21 @@ noremap <Right> <NOP>
 noremap <Up>    <NOP>
 noremap <Down>  <NOP>
 " Navigate quickfix list
-noremap <Leader>; :cp<CR>
-noremap <Leader>' :cn<CR>
-noremap <Leader>: :cclose<CR>
-" Switch between windows
-noremap <Leader>w <C-w>w
+noremap <silent> <Leader>; :cp<CR>
+noremap <silent> <Leader>' :cn<CR>
+noremap <silent> <Leader>l :cclose<CR>
+" Navigate between windows
+noremap <silent> <Leader>[ <C-w>h
+noremap <silent> <Leader>] <C-w>l
+" Move right window to left
+nnoremap <Leader>ww <C-w>H<C-w>=
 " Hide search highlights
 nnoremap <silent> <Space> :noh<CR>
 " Temporarily open an shell, type exit to return to vim
 nnoremap <Leader>s :sh<CR>
 " Switch between tabs
-noremap <Leader>[ :tabprev<CR>
-noremap <Leader>] :tabnext<CR>
+noremap <silent> <Leader><Leader>[ :tabprev<CR>
+noremap <silent> <Leader><Leader>] :tabnext<CR>
 " Close all windows except current
 nnoremap <Leader>qw :only<CR>
 " Close all tabs except current
@@ -150,21 +149,19 @@ noremap <Leader>P "0P
 noremap <Leader>p "0p
 " (TODO) Split current file vertically
 nnoremap <Leader>v :vs<CR><C-w>=
-" (TODO) Split vertically with new file
-nnoremap <Leader>vn :vnew<CR><C-w>=
-" (TODO) Move current window to top left
-nnoremap <Leader>ww <C-w>H<C-w>=
-" (TODO) Open alternate buffer in window
+" Open alternate buffer in window
 nnoremap <Leader>b :b#<CR>
-" (TODO) Insert one line above
-nmap K i<Enter><Esc>
-" (TODO) Vertically split and open alternate buffer
-nmap <Leader>vb <Leader>v<Leader>b
-" (TODO) Navigate between windows
-noremap <silent> <Leader><Leader>h <C-w>h
-noremap <silent> <Leader><Leader>j <C-w>j
-noremap <silent> <Leader><Leader>k <C-w>k
-noremap <silent> <Leader><Leader>l <C-w>l
+
+"" *** EDIITNG KEYMAPS ***
+" Clean trailing whitespaces with vim-trailing-whitespace and save file
+nnoremap <Leader>w :FixWhitespace<CR>:w<CR>
+
+
+"" *** PROGRAMMING KEYMAPS ***
+""Go
+
+" Show go test results (clear only works on Linux)
+au FileType go nnoremap <Leader>tt :!clear && go test<CR>
 
 "" *** PLUGIN KEYMAPS ***
 
@@ -189,33 +186,27 @@ nnoremap <Leader>gd :Gdiff<CR>
 " git log current fil
 nnoremap <Leader>gl :Glog<CR>
 
-"" vim-trailing-whitespace
-" Remove trailing whitespaces
-nnoremap <Leader>dw :FixWhitespace<CR>
-
 "" vim-go
 
-" run :GoBuild or :GoTestCompile based on the go file
-function! s:build_go_files()
-  let l:file = expand('%')
-  if l:file =~# '^\f\+_test\.go$'
-    call go#test#Test(0, 1)
-  elseif l:file =~# '^\f\+\.go$'
-    call go#cmd#Build(0)
-  endif
-endfunction
+" Build and test Go source files. Only compile for test files
+augroup auto_go
+  au!
+  au BufWritePost *.go :execute 'GoBuild' | :GoTest<CR>
+  au BufWritePost *_test.go :GoTestCompile
+augroup end
 
 au Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
 au Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
 au Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
 au Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
 
-au FileType go nmap <Leader>b :<C-u>call <SID>build_go_files()<CR>
-au FileType go nmap <Leader>r <Plug>(go-run)
+" (TODO) Build or test may not be needed
+au FileType go nmap <Leader>rr <Plug>(go-run)
 au FileType go nmap <Leader>t <Plug>(go-test)
-au FileType go nmap <Leader>c <Plug>(go-coverage-toggle)
-au Filetype go nmap <Leader>a :AV<CR>
-au FileType go nmap <Leader>d <Plug>(go-decls)
+au Filetype go nnoremap <Leader>av :AV<CR>
+au Filetype go nnoremap <Leader>a :A<CR>
+au FileType go nmap <Leader>d <Plug>(go-defs)
+au FileType go nmap <Leader>r :GoRename<Space>
 
 "" gitv
 " (TODO) Browse git version history
