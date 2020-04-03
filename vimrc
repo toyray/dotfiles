@@ -78,6 +78,7 @@ colorscheme molokai
 "" ctrlp.vim
 let g:ctrlp_show_hidden = 1
 let g:ctrlp_working_path_mode = 0
+let g:ctrlp_cmd = 'CtrlPMixed'
 
 "" syntastic
 set statusline+=%#warningmsg#
@@ -143,7 +144,7 @@ nnoremap <Leader>qt :tabonly<CR>
 " Edit ~/.vimrc in new tab
 nnoremap <silent> <Leader>vimrc :tabe $MYVIMRC<CR>
 " (TODO) Edit new file and set local directory
-noremap <Leader><Tab> :tabe<CR>:lcd<space>
+noremap <Leader>nt :tabe<CR>:lcd<space>
 " (TODO) Paste line above or below
 noremap <Leader>P "0P
 noremap <Leader>p "0p
@@ -157,20 +158,22 @@ nnoremap <Leader>b :b#<CR>
 nnoremap <Leader>w :FixWhitespace<CR>:w<CR>
 
 
-"" *** PROGRAMMING KEYMAPS ***
+"" *** PROGRAMMING KEYMAPS AND CONFIGS ***
 ""Go
 
 " Show go test results (clear only works on Linux)
-au FileType go nnoremap <Leader>tt :!clear && go test<CR>
+au FileType go nnoremap <Leader>tt :!clear && go test ./...<CR>
+au FileType go nnoremap <Leader>w :FixWhitespace<CR>:w<CR>:<C-u>call <SID>build_go_files()<CR>
+" Auto change local directory to current file
+au BufEnter * silent! lcd %:p:h
 
 "" *** PLUGIN KEYMAPS ***
 
 "" nerdtree
 
 " Open navigator
-noremap <Leader>nt :NERDTreeFind<CR>
-" (TODO) Toggle navigator, maybe <Leader>qw is more efficient?
-noremap <Leader>ntt :NERDTreeToggle<CR>
+" Toggle navigator
+noremap <Leader>x :NERDTreeToggle<CR>
 
 "" nerdcommenter
 
@@ -189,11 +192,15 @@ nnoremap <Leader>gl :Glog<CR>
 "" vim-go
 
 " Build and test Go source files. Only compile for test files
-augroup auto_go
-  au!
-  au BufWritePost *.go :execute 'GoBuild' | :GoTest<CR>
-  au BufWritePost *_test.go :GoTestCompile
-augroup end
+" run :GoBuild or :GoTestCompile based on the go file
+function! s:build_go_files()
+  let l:file = expand('%')
+  if l:file =~# '^\f\+_test\.go$'
+    call go#test#Test(0, 1)
+  elseif l:file =~# '^\f\+\.go$'
+    call go#cmd#Build(0)
+  endif
+endfunction
 
 au Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
 au Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
