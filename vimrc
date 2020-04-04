@@ -72,6 +72,8 @@ set sidescrolloff=5
 "" Colors
 set t_Co=256
 colorscheme molokai
+" Fix wonky matching parentheses
+hi MatchParen ctermfg=233 ctermbg=208 cterm=bold
 
 "" *** PLUGIN SETTINGS ***
 
