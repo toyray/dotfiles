@@ -8,7 +8,6 @@ Plugin 'gmarik/Vundle.vim'
 
 "" Vim appearance plugins
 Plugin 'gcmt/taboo.vim'
-Plugin 'vim-scripts/ScrollColors'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'tomasr/molokai'
@@ -16,22 +15,20 @@ Plugin 'tomasr/molokai'
 "" Editing plugins
 Plugin 'bronson/vim-trailing-whitespace'
 Plugin 'ConradIrwin/vim-bracketed-paste'
-Plugin 'tpope/vim-endwise'
+Plugin 'sjl/gundo.vim'
 
 "" Navigation and search plugins
-" Type <Leader>\* to search for word under cursor
-Plugin 'bronson/vim-visual-star-search'
 Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'scrooloose/nerdtree'
+Plugin 'mileszs/ack.vim'
 
-"" Syntax plugins
+"" Coding plugins
+Plugin 'tpope/vim-endwise'
 Plugin 'scrooloose/nerdcommenter.git'
-Plugin 'scrooloose/syntastic'
 
 " Git plugins
-Plugin 'tpope/vim-fugitive'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'gregsexton/gitv'
+Plugin 'tpope/vim-fugitive'
 
 " Go plugins
 Plugin 'fatih/vim-go'
@@ -41,7 +38,7 @@ call vundle#end()
 syntax enable
 set encoding=utf-8
 set showcmd
-set number
+set relativenumber "Use relative line numbers for easier motions
 set hidden
 set wildmenu
 set ttimeout
@@ -61,6 +58,8 @@ set hlsearch
 set incsearch
 set ignorecase
 set smartcase
+"Global replace in line by default. Turn off by supplying g in substitute command
+set gdefault
 
 "" Display
 set splitright
@@ -68,49 +67,61 @@ set splitbelow
 set laststatus=2
 set scrolloff=3
 set sidescrolloff=5
+set textwidth=79
+set colorcolumn=85
+set lazyredraw
+set cursorline
 
 "" Colors
 set t_Co=256
 colorscheme molokai
 " Fix wonky matching parentheses
-hi MatchParen ctermfg=233 ctermbg=208 cterm=bold
+hi MatchParen ctermfg=233 ctermbg=208 cterm=bold,reverse
 
 "" *** PLUGIN SETTINGS ***
+"" ack
+let g:ackhighlight = 1
+let g:ack_default_options = " -s -H --nocolor --nogroup --column --smart-case --follow --ignore-file=ext:a"
 
-"" ctrlp.vim
+"" ctrlp
+let g:ctrlp_cmd = 'CtrlP'
+" Allow search by line as well
+let g:ctrlp_extensions = ['line']
+let g:ctrlp_max_files = 100
 let g:ctrlp_show_hidden = 1
-let g:ctrlp_working_path_mode = 0
-let g:ctrlp_cmd = 'CtrlPMixed'
+let g:ctrlp_working_path_mode = "ra"
 
-"" syntastic
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+""
+let g:gundo_prefer_python3 = 1
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 1
-let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go', 'env'] }
+"" netrw
+let g:netrw_liststyle = 2
+let g:netrw_banner = 0
+let g:netrw_winsize = 15
+let g:netrw_browse_split = 2
 
-"" taboo.vim
+"" taboo
 let g:taboo_tabline = 0
 
 "" vim-airline
-let g:airline_powerline_fonts = 1
+let g:airline_powerline_fonts = 0
+let g:airline_theme="dark"
 let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail'
 let g:airline#extensions#tabline#show_buffers = 0
-let g:airline_theme="luna"
 
 "" vim-go
-let g:go_list_type = "quickfix"
-let g:go_fmt_command = "goimports"
-" linter isn't always reliable
-let g:go_metalinter_autosave = 0
 let g:go_auto_sameids = 0
 let g:go_auto_type_info = 1
+let g:go_fmt_command = "goimports"
+let g:go_list_type = "quickfix"
+" linter isn't always reliable
+let g:go_metalinter_autosave = 0
+let g:go_metalinter_enabled = ['vet', 'golint', 'errcheck', 'deadcode']
 " gopls works for module renaming
 let g:go_rename_command = "gopls"
+let g:go_template_use_pkg = 1
+let g:go_test_show_name = 1
 
 "" *** KEYMAPS ***
 
@@ -119,63 +130,65 @@ let mapleader=","
 " Toggle line numbers
 noremap <Leader>n :set invnumber<CR>
 " Disable cursor keys
-noremap <Left>  <NOP>
-noremap <Right> <NOP>
-noremap <Up>    <NOP>
-noremap <Down>  <NOP>
+"noremap <Left>  <NOP>
+"noremap <Right> <NOP>
+"noremap <Up>    <NOP>
+"noremap <Down>  <NOP>
+"inoremap <Left>  <NOP>
+"inoremap <Right> <NOP>
+"inoremap <Up>    <NOP>
+"inoremap <Down>  <NOP>
 " Navigate quickfix list
 noremap <silent> <Leader>; :cp<CR>
 noremap <silent> <Leader>' :cn<CR>
 noremap <silent> <Leader>l :cclose<CR>
-" Navigate between windows
-noremap <silent> <Leader>[ <C-w>h
-noremap <silent> <Leader>] <C-w>l
 " Move right window to left
 nnoremap <Leader>ww <C-w>H<C-w>=
 " Hide search highlights
 nnoremap <silent> <Space> :noh<CR>
 " Temporarily open an shell, type exit to return to vim
 nnoremap <Leader>s :sh<CR>
-" Switch between tabs
-noremap <silent> <Leader><Leader>[ :tabprev<CR>
-noremap <silent> <Leader><Leader>] :tabnext<CR>
 " Close all windows except current
 nnoremap <Leader>qw :only<CR>
 " Close all tabs except current
 nnoremap <Leader>qt :tabonly<CR>
 " Edit ~/.vimrc in new tab
 nnoremap <silent> <Leader>vimrc :tabe $MYVIMRC<CR>
-" (TODO) Edit new file and set local directory
-noremap <Leader>nt :tabe<CR>:lcd<space>
-" (TODO) Paste line above or below
-noremap <Leader>P "0P
-noremap <Leader>p "0p
-" (TODO) Split current file vertically
-nnoremap <Leader>v :vs<CR><C-w>=
-" Open alternate buffer in window
+" Switch to previously edited buffer
 nnoremap <Leader>b :b#<CR>
-
-"" *** EDIITNG KEYMAPS ***
-" Clean trailing whitespaces with vim-trailing-whitespace and save file
-nnoremap <Leader>w :FixWhitespace<CR>:w<CR>
-
+" (TODO) Use PCRE for regex
+nnoremap / /\v
+" Change working directory to directory of current file
+nnoremap <Leader>lcd :lcd %:h<CR>:pw<CR>
+" Change working directory back to original working directory
+nnoremap <Leader>cd :cd<CR>:pw<CR>
+" Open netrw as visual split
+nmap <Leader>x :Vexplore<CR>
+" Disable macro recording
+noremap q <NOP>
+" Navigate windows
+noremap <silent> <Leader><Leader>h <C-w>h
+noremap <silent> <Leader><Leader>j <C-w>j
+noremap <silent> <Leader><Leader>k <C-w>k
+noremap <silent> <Leader><Leader>l <C-w>l
 
 "" *** PROGRAMMING KEYMAPS AND CONFIGS ***
 ""Go
 
 " Show go test results (clear only works on Linux)
 au FileType go nnoremap <Leader>tt :!clear && go test ./...<CR>
-au FileType go nnoremap <Leader>w :FixWhitespace<CR>:w<CR>:<C-u>call <SID>build_go_files()<CR>
 " Auto change local directory to current file
-au BufEnter * silent! lcd %:p:h
+"au BufEnter * silent! lcd %:p:h
 
 "" *** PLUGIN KEYMAPS ***
 
-"" nerdtree
+"" ack
+nnoremap <C-f> :Ack!<space>
+noremap <Leader>fw :Ack! "<cword>"<CR>
+noremap <Leader>todo :Ack! todo<CR>
 
-" Open navigator
-" Toggle navigator
-noremap <Leader>x :NERDTreeToggle<CR>
+"" gundo
+nnoremap <F5> :GundoToggle<CR>
 
 "" nerdcommenter
 
@@ -183,47 +196,31 @@ noremap <Leader>x :NERDTreeToggle<CR>
 map <Leader>/ <Plug>NERDCommenterToggle
 " (TODO) Other less-used NERDCommenter functionality
 map <Leader>// <Plug>NERDCommenterYank
-map <Leader>/b <Plug>NERDCommenterAlignLeft
-
-"" vim-fugitive
-" git diff current file
-nnoremap <Leader>gd :Gdiff<CR>
-" git log current fil
-nnoremap <Leader>gl :Glog<CR>
 
 "" vim-go
+augroup auto_go
+  au!
+  au BufWritePost *.go  :exe "FixWhitespace" | :GoBuild!
+  au BufWritePost *_test.go  :exe "GoTestCompile!"
+augroup end
 
-" Build and test Go source files. Only compile for test files
-" run :GoBuild or :GoTestCompile based on the go file
-function! s:build_go_files()
-  let l:file = expand('%')
-  if l:file =~# '^\f\+_test\.go$'
-    call go#test#Test(0, 1)
-  elseif l:file =~# '^\f\+\.go$'
-    call go#cmd#Build(0)
-  endif
-endfunction
-
-au Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
-au Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
-au Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
-au Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
-
-" (TODO) Build or test may not be needed
-au FileType go nmap <Leader>rr <Plug>(go-run)
-au FileType go nmap <Leader>t <Plug>(go-test)
-au Filetype go nnoremap <Leader>av :AV<CR>
-au Filetype go nnoremap <Leader>a :A<CR>
-au FileType go nmap <Leader>d <Plug>(go-defs)
-au FileType go nmap <Leader>r :GoRename<Space>
+" gd for go-def
+au FileType go nmap <Leader>r <Plug>(go-run)
+au FileType go nmap gf <Plug>(go-referrers)
+au FileType go nmap <Leader>t :wa<CR><Plug>(go-test)
+au FileType go nmap <Leader>tf :wa<CR><Plug>(go-test)
+au FileType go nmap <Leader>av <Plug>(go-alternate-vertical)
+au FileType go nmap <Leader>a <Plug>(go-alternate-edit)
+"" (TODO) already mapped as gd
+au FileType go nmap gdv <Plug>(go-def-vertical)
+au FileType go nmap <Leader>dd <Plug>(go-decls)
+au FileType go nmap <Leader>da <Plug>(go-decls-dir)
+au FileType go nmap gr :GoRename<Space>
+au FileType go nmap <Leader>gl <Plug>(go-metalinter)
 
 "" gitv
 " (TODO) Browse git version history
 nnoremap <Leader>gv :Gitv<CR>
-
-"" ctrlp.vim
-" (TODO) Open CtrlP to search buffers
-nnoremap <Leader>bb :CtrlPBuffer<CR>
 
 "" *** RUNTIME! ***
 " Press  % to navigate beween brace/bracket pairs
