@@ -72,6 +72,12 @@ set colorcolumn=85
 set lazyredraw
 set cursorline
 
+"" Command window
+" Truncate all messages to reduce prompting
+set shortmess+=T
+set cmdheight=2
+set visualbell t_vb=
+
 "" Colors
 set t_Co=256
 colorscheme molokai
@@ -91,7 +97,10 @@ let g:ctrlp_max_files = 100
 let g:ctrlp_show_hidden = 1
 let g:ctrlp_working_path_mode = "ra"
 
-""
+"" gitgutter
+let g:gitgutter_map_keys = 0
+
+"" gundo
 let g:gundo_prefer_python3 = 1
 
 "" netrw
@@ -177,8 +186,7 @@ noremap <silent> <Leader><Leader>l <C-w>l
 
 " Show go test results (clear only works on Linux)
 au FileType go nnoremap <Leader>tt :!clear && go test ./...<CR>
-" Auto change local directory to current file
-"au BufEnter * silent! lcd %:p:h
+au FileType go set autoread
 
 "" *** PLUGIN KEYMAPS ***
 
