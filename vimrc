@@ -32,6 +32,7 @@ Plugin 'tpope/vim-fugitive'
 
 " Go plugins
 Plugin 'fatih/vim-go'
+Plugin 'Chiel92/vim-autoformat'
 
 call vundle#end()
 
@@ -119,6 +120,10 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 let g:airline#extensions#tabline#show_buffers = 0
 
+"" vim-autoformat
+"" Python: https://github.com/google/yapf
+let g:formatter_yapf_style = 'pep8'
+
 "" vim-go
 let g:go_auto_sameids = 0
 let g:go_auto_type_info = 1
@@ -187,6 +192,9 @@ noremap <silent> <Leader><Leader>l <C-w>l
 " Show go test results (clear only works on Linux)
 au FileType go nnoremap <Leader>tt :!clear && go test ./...<CR>
 au FileType go set autoread
+
+"" Python
+au BufWrite *.py :Autoformat
 
 "" *** PLUGIN KEYMAPS ***
 
