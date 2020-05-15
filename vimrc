@@ -187,11 +187,20 @@ noremap <silent> <Leader><Leader>k <C-w>k
 noremap <silent> <Leader><Leader>l <C-w>l
 
 "" *** PROGRAMMING KEYMAPS AND CONFIGS ***
+""Bash
+au BufNewFile,BufRead *.sh setlocal nowrap
+
+"" Dockerfile
+au BufNewFile,BufRead dockerfile setlocal nowrap
+
 ""Go
 
 " Show go test results (clear only works on Linux)
 au FileType go nnoremap <Leader>tt :!clear && go test ./...<CR>
-au FileType go set autoread
+au FileType go setlocal autoread
+
+"" Python
+au BufWrite *.py :Autoformat
 
 "" Python
 au BufWrite *.py :Autoformat
