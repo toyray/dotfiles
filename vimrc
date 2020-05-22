@@ -94,7 +94,7 @@ let g:ack_default_options = " -s -H --nocolor --nogroup --column --smart-case --
 let g:ctrlp_cmd = 'CtrlP'
 " Allow search by line as well
 let g:ctrlp_extensions = ['line']
-let g:ctrlp_max_files = 100
+let g:ctrlp_max_files = 1000
 let g:ctrlp_show_hidden = 1
 let g:ctrlp_working_path_mode = "ra"
 
@@ -188,19 +188,16 @@ noremap <silent> <Leader><Leader>l <C-w>l
 
 "" *** PROGRAMMING KEYMAPS AND CONFIGS ***
 ""Bash
-au BufNewFile,BufRead *.sh setlocal nowrap
+au FileType sh setlocal nowrap formatoptions-=t
 
 "" Dockerfile
-au BufNewFile,BufRead dockerfile setlocal nowrap
+au FileType dockerfile setlocal nowrap formatoptions-=t
 
 ""Go
 
 " Show go test results (clear only works on Linux)
 au FileType go nnoremap <Leader>tt :!clear && go test ./...<CR>
 au FileType go setlocal autoread
-
-"" Python
-au BufWrite *.py :Autoformat
 
 "" Python
 au BufWrite *.py :Autoformat
