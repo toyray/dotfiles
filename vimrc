@@ -94,7 +94,7 @@ let g:ack_default_options = " -s -H --nocolor --nogroup --column --smart-case --
 let g:ctrlp_cmd = 'CtrlP'
 " Allow search by line as well
 let g:ctrlp_extensions = ['line']
-let g:ctrlp_max_files = 1000
+let g:ctrlp_max_files = 10000
 let g:ctrlp_show_hidden = 1
 let g:ctrlp_working_path_mode = "ra"
 
@@ -208,6 +208,10 @@ au BufWrite *.py :Autoformat
 nnoremap <C-f> :Ack!<space>
 noremap <Leader>fw :Ack! "<cword>"<CR>
 noremap <Leader>todo :Ack! todo<CR>
+
+"" CtrlP
+nnoremap <Leader>pg :let g:ctrlp_working_path_mode = 'ra'<CR>:CtrlP<CR>
+nnoremap <Leader>pd :let g:ctrlp_working_path_mode = 'a'<CR>:CtrlP<CR>
 
 "" gundo
 nnoremap <F5> :GundoToggle<CR>
