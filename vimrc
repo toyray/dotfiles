@@ -42,6 +42,7 @@ set showcmd
 set relativenumber "Use relative line numbers for easier motions
 set hidden
 set wildmenu
+set history=200 "Remember last 200 commands
 set ttimeout
 set ttimeoutlen=100
 filetype plugin indent on
@@ -181,10 +182,10 @@ nmap <Leader>x :Vexplore<CR>
 " Disable macro recording
 noremap q <NOP>
 " Navigate windows
-noremap <silent> <Leader><Leader>h <C-w>h
-noremap <silent> <Leader><Leader>j <C-w>j
-noremap <silent> <Leader><Leader>k <C-w>k
-noremap <silent> <Leader><Leader>l <C-w>l
+noremap <silent> [h <C-w>h
+noremap <silent> ]j <C-w>j
+noremap <silent> ]k <C-w>k
+noremap <silent> ]l <C-w>l
 
 "" *** PROGRAMMING KEYMAPS AND CONFIGS ***
 ""Bash
