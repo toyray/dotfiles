@@ -82,7 +82,7 @@ set visualbell t_vb=
 
 "" Colors
 set t_Co=256
-colorscheme molokai
+silent! colorscheme molokai
 " Fix wonky matching parentheses
 hi MatchParen ctermfg=233 ctermbg=208 cterm=bold,reverse
 
