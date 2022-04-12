@@ -34,6 +34,9 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'fatih/vim-go'
 Plugin 'Chiel92/vim-autoformat'
 
+" YARA
+Plugin 's3rvac/vim-syntax-yara'
+
 call vundle#end()
 
 syntax enable
@@ -123,7 +126,7 @@ let g:airline#extensions#tabline#show_buffers = 0
 
 "" vim-autoformat
 "" Python: https://github.com/google/yapf
-let g:formatter_yapf_style = 'pep8'
+"" let g:formatter_yapf_style = 'pep8'
 
 "" vim-go
 let g:go_auto_sameids = 0
@@ -201,7 +204,10 @@ au FileType go nnoremap <Leader>tt :!clear && go test ./...<CR>
 au FileType go setlocal autoread
 
 "" Python
-au BufWrite *.py :Autoformat
+"" au BufWrite *.py :Autoformat
+
+"" YARA
+au BufNewFile,BufRead *.yar,*.yara setlocal filetype=yara
 
 "" *** PLUGIN KEYMAPS ***
 
