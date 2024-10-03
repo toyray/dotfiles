@@ -27,15 +27,16 @@ Plugin 'scrooloose/nerdcommenter.git'
 
 " Git plugins
 Plugin 'airblade/vim-gitgutter'
-Plugin 'gregsexton/gitv'
 Plugin 'tpope/vim-fugitive'
 
 " Go plugins
 Plugin 'fatih/vim-go'
-Plugin 'Chiel92/vim-autoformat'
 
 " YARA
 Plugin 's3rvac/vim-syntax-yara'
+
+" Language server
+Plugin 'dense-analysis/ale'
 
 call vundle#end()
 
@@ -57,6 +58,7 @@ set nowrap
 set tabstop=2 shiftwidth=2
 set expandtab
 set backspace=indent,eol,start
+set nofixeol
 
 "" Searching
 set hlsearch
@@ -72,8 +74,8 @@ set splitbelow
 set laststatus=2
 set scrolloff=3
 set sidescrolloff=5
-set textwidth=79
-set colorcolumn=85
+set textwidth=88
+set colorcolumn=93
 set lazyredraw
 set cursorline
 
@@ -123,10 +125,14 @@ let g:airline_theme="dark"
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 let g:airline#extensions#tabline#show_buffers = 0
+let g:airline#extensions#ale#enabled = 1
 
-"" vim-autoformat
-"" Python: https://github.com/google/yapf
-"" let g:formatter_yapf_style = 'pep8'
+"" Linter
+let g:ale_linters = { "python": ["mypy", "ruff"] }
+"" Formatter
+let g:ale_fixers = { "python": ["ruff_format"] }
+let g:ale_sign_column_always = 1
+let g:ale_fix_on_save = 1
 
 "" vim-go
 let g:go_auto_sameids = 0
@@ -203,8 +209,6 @@ au FileType dockerfile setlocal nowrap formatoptions-=t
 au FileType go nnoremap <Leader>tt :!clear && go test ./...<CR>
 au FileType go setlocal autoread
 
-"" Python
-"" au BufWrite *.py :Autoformat
 
 "" YARA
 au BufNewFile,BufRead *.yar,*.yara setlocal filetype=yara
@@ -251,9 +255,10 @@ au FileType go nmap <Leader>da <Plug>(go-decls-dir)
 au FileType go nmap gr :GoRename<Space>
 au FileType go nmap <Leader>gl <Plug>(go-metalinter)
 
-"" gitv
-" (TODO) Browse git version history
-nnoremap <Leader>gv :Gitv<CR>
+"" ale
+au FileType python nmap <silent> <Leader>j <Plug>(ale_previous_wrap)
+au FileType python nmap <silent> <Leader>k <Plug>(ale_next_wrap)
+
 
 "" *** RUNTIME! ***
 " Press  % to navigate beween brace/bracket pairs
