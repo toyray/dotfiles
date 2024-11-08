@@ -212,6 +212,11 @@ au FileType go setlocal autoread
 
 "" YARA
 au BufNewFile,BufRead *.yar,*.yara setlocal filetype=yara
+"
+"" isort
+" Install isort with pipx install isort
+au FileType python nnoremap <Leader>i :!isort % <CR><CR>
+au FileType python setlocal autoread
 
 "" *** PLUGIN KEYMAPS ***
 
