@@ -130,7 +130,7 @@ let g:airline#extensions#ale#enabled = 1
 "" Linter
 let g:ale_linters = { "python": ["mypy", "ruff"] }
 "" Formatter
-let g:ale_fixers = { "python": ["ruff_format"] }
+let g:ale_fixers = { "python": ["ruff_format", "isort"] }
 let g:ale_sign_column_always = 1
 let g:ale_fix_on_save = 1
 
@@ -212,11 +212,6 @@ au FileType go setlocal autoread
 
 "" YARA
 au BufNewFile,BufRead *.yar,*.yara setlocal filetype=yara
-"
-"" isort
-" Install isort with pipx install isort
-au FileType python nnoremap <Leader>i :!isort % <CR><CR>
-au FileType python setlocal autoread
 
 "" *** PLUGIN KEYMAPS ***
 
